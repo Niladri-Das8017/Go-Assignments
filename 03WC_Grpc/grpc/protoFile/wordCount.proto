@@ -1,0 +1,22 @@
+syntax = "proto3";
+package protoFile;
+
+option go_package = "wcgrpc/pb";
+
+
+message TextRequest {
+    string text = 1;
+}
+message WordCount {
+    string word = 1;
+    int32 count = 2;
+}
+
+message WcResponse {
+    repeated WordCount WcList = 1;
+}
+
+
+service WordCountServiece {
+    rpc WordCount(TextRequest) returns (WcResponse){};
+};

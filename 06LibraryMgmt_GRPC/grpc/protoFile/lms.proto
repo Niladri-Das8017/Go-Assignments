@@ -1,0 +1,80 @@
+syntax = "proto3";
+package protoFile;
+
+option go_package = "06LibraryMgmt_GRPC/grpc/pb";
+
+//Book Structure
+message Book {
+    string id = 1;
+    string title = 2;
+    string author = 3; 
+}
+
+//Create Book
+message CreateBookReq {
+    Book book = 1;
+}
+message CreateBookRes {
+    Book book = 1;
+}
+
+//List All Books 
+message ListAllBooksReq {
+
+}
+message ListAllBooksRes {
+    Book Book = 1;
+}
+
+//Search Book
+message SearchBooksReq {
+    oneof search{
+        string title = 1;
+        string author = 2;
+    }
+}
+
+message SearchBooksRes {
+    Book book = 1;
+}
+
+
+//Update Book
+message UpdateBookReq {
+    Book book = 1;
+}
+
+message UpdateBookRes {
+    Book book = 1;
+}
+
+//Delete Book
+message DeleteBookReq {
+    string id = 1;
+}
+message DeleteBookRes {
+    bool success = 1;
+}
+
+
+//service
+service LmsService {
+
+    //Create Book
+	rpc CreateBook(CreateBookReq) returns(CreateBookRes);
+
+    //List All Books
+    rpc ListAllBooks(ListAllBooksReq) returns(stream ListAllBooksRes); //Bi-Directional streaming 
+
+    //Search Books
+    rpc SearchBooks(SearchBooksReq) returns(stream SearchBooksRes); //Bi-Directional streaming 
+    
+    //Update Book
+    rpc UpdateBook (UpdateBookReq) returns (UpdateBookRes);
+
+    //Delete Book
+    rpc DeleteBook(DeleteBookReq) returns(DeleteBookRes);
+
+    
+}
+

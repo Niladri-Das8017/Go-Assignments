@@ -11,7 +11,6 @@ import (
 	"strings"
 )
 
-//Crud methods goes here...
 //Create Book
 func createBook(client pb.LmsServiceClient, ctx context.Context) error {
 

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDbOT(t *testing.T) {
+func TestDb(t *testing.T) {
 
 	ctx := context.Background()
 
@@ -45,7 +45,7 @@ func TestDbOT(t *testing.T) {
 
 	//Test UpdateBook
 	updateBoookDetails := &pb.Book{
-		Id: id,
+		Id:     id,
 		Title:  "Updated Title",
 		Author: "Updated Author",
 	}

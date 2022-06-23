@@ -17,7 +17,11 @@ const bufSize = 1024 * 1024
 var lis *bufconn.Listener
 
 func init() {
-	database.InitDB()
+	err := database.InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	lis = bufconn.Listen(bufSize)
 	server := grpc.NewServer()
 	pb.RegisterLmsServiceServer(server, &LmsServiceServer{})

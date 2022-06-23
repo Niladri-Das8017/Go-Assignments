@@ -80,7 +80,7 @@ func (s *LmsServiceServer) ListAllBooks(req *pb.ListAllBooksReq, stream pb.LmsSe
 
 		//Check if client still connected
 		if err != nil {
-			log.Fatal("Client Disconnected : ", err)
+			log.Fatal("Client Disconnected : ", err) //Client Diisconnected thatts why fatal error
 		}
 
 	}
@@ -135,7 +135,7 @@ func (s *LmsServiceServer) SearchBooks(req *pb.SearchBooksReq, stream pb.LmsServ
 
 		//Check if client still connected
 		if err != nil {
-			log.Fatal("Client Disconnected : ", err)
+			log.Fatal("Client Disconnected : ", err) //Client Diisconnected thatts why fatal error
 		}
 
 	}

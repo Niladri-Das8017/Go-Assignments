@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func TestDb(t *testing.T) {
@@ -27,7 +28,6 @@ func TestDb(t *testing.T) {
 	//Test CreateBook
 	id, err := CreateBook(ctx, book)
 	assert.Nil(t, err)
-
 	//Is id a String?
 	if reflect.ValueOf(id).Kind() != reflect.String {
 		t.Errorf("Id is not type string!!")
@@ -36,12 +36,12 @@ func TestDb(t *testing.T) {
 	//Test ListAllBooks
 	cursor, err := ListAllBooks()
 	assert.Nil(t, err)
-	assert.NotNil(t, cursor)
+	assert.IsType(t, &mongo.Cursor{}, cursor)
 
 	//Test SeearchBooks
 	cursor, err = SearchBooks(book.Title, book.Author)
 	assert.Nil(t, err)
-	assert.NotNil(t, cursor)
+	assert.IsType(t, &mongo.Cursor{}, cursor)
 
 	//Test UpdateBook
 	updateBoookDetails := &pb.Book{
@@ -52,7 +52,7 @@ func TestDb(t *testing.T) {
 
 	updatedBook, err := UpdateBook(ctx, updateBoookDetails)
 	assert.Nil(t, err)
-	assert.NotNil(t, updatedBook)
+	assert.IsType(t, &model.BookDetails{}, updatedBook)
 
 	//Test DeleteBook
 	err = DeleteBook(id)

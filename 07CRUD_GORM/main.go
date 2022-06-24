@@ -14,7 +14,8 @@ import (
 func main() {
 
 	//Initialize Database
-	db, err := database.InitDB()
+	dbPath := "database/PhoneBook.db"
+	db, err := database.InitDB(dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,8 +43,6 @@ func main() {
 
 		switch option {
 		case 1:
-
-		
 
 			//taking Input
 			fmt.Print("Name: ")
@@ -182,7 +181,11 @@ func main() {
 				continue
 			}
 
-			updatedContact := database.UpdateContact(db, searchedContacts[sNo], name, number)
+			updateData := model.Contact{
+				Name: name,
+				Number: number,
+			}
+			updatedContact := database.UpdateContact(db, searchedContacts[sNo], updateData)
 			fmt.Printf(`Update Successful: 
 			Name: %s
 			Number: %s`, updatedContact.Name, updatedContact.Number )

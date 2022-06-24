@@ -55,116 +55,78 @@ func main() {
 	//fmt.Println(data)
 
 	parse(data)
+	fmt.Println("")
+	parse("Niladri")
 
 }
 
 //Parse function that accepts an intrface, that will allow us to pass anything we want
-//It will treat every data-structure with keyvalue pairs or fields as structure, check every fields and nested fields and print it
-//if it gets other than that, like array int etc. "parse" will print it and return.
 func parse(ip interface{}) {
 
-	s := reflect.ValueOf(ip)
+	input := reflect.ValueOf(ip)
+	typeOfIP := input.Type()
 
-	typeOfST := s.Type()
+	//If structure
+	if input.Kind() == reflect.Struct {
 
-	//Check if struct
-	if s.Kind() != reflect.Struct {
-		fmt.Println("Value : ", s)
-		return
+		//empSt := obj{}
+		if reflect.DeepEqual(ip, reflect.Zero(reflect.TypeOf(ip)).Interface()) == false {
+			for i := 0; i < input.NumField(); i++ {
+
+				field := input.Field(i)
+
+				if reflect.DeepEqual(field.Interface(), reflect.Zero(reflect.TypeOf(field.Interface())).Interface()) == false {
+
+					fmt.Printf("\nNo = %d Field = %s Type = %s  ", i, typeOfIP.Field(i).Name, field.Type())
+					parse(field.Interface())
+				}
+			}
+		}
+
+	}
+	//If slice
+	if input.Kind() == reflect.Slice {
+
+		//Cheeck empty
+		if input.Len() != 0 {
+
+			for i := 0; i < input.Len(); i++ {
+
+				fmt.Printf("\n[] Obj%d:", i+1)
+				parse(input.Index(i).Interface())
+
+			}
+
+		}
 	}
 
-	for i := 0; i < s.NumField(); i++ {
+	//If map
+	if input.Kind() == reflect.Map {
 
-		field := s.Field(i)
+		keys := input.MapKeys()
 
-		//If nested, call parse recursively
-		if field.Kind() == reflect.Struct || field.Kind() == reflect.Slice || field.Kind() == reflect.Map {
+		//MapKeys stores keys in reverse form,
+		//Hence we are reversing it to get the original flow
+		swap := reflect.Swapper(keys)
+		for i := 0; i < len(keys)/2; i++ {
+			swap(i, len(keys)-1-i)
+		}
 
-			//If structure
-			if field.Kind() == reflect.Struct {
+		//Check eempty
+		if len(keys) != 0 {
 
-				//nested structure
-				ns := field.Interface()
-
-				//Cheecking which type of structure it is
-				switch ns.(type) {
-				case obj:
-					empSt := obj{}
-					//proceed if all fields are not empty
-					if reflect.DeepEqual(ns, empSt) == false {
-
-						fmt.Printf("Field = %s Type = %s -> \n", typeOfST.Field(i).Name, field.Type())
-
-						parse(field.Interface())
-
-					}
-				case st:
-					empSt := st{}
-					//proceed if all fields are not empty
-					if reflect.DeepEqual(ns, empSt) == false {
-
-						fmt.Printf("Field = %s Type = %s -> \n", typeOfST.Field(i).Name, field.Type())
-
-						parse(field.Interface())
-
-					}
-				}
-
+			for _, key := range keys {
+				fmt.Print("\nkey: ", key, " ->")
+				parse(input.MapIndex(key).Interface())
 			}
+		}
+	}
 
-			//If Slice
-			if field.Kind() == reflect.Slice {
+	if input.Kind() != reflect.Struct && input.Kind() != reflect.Slice && input.Kind() != reflect.Map {
+		//print Result
+		if input != reflect.Zero(reflect.TypeOf(input)) {
 
-				content := reflect.ValueOf(field.Interface())
-
-				//Cheeck empty
-				if content.Len() != 0 {
-
-					fmt.Printf("Field = %s Type = %s -> \n", typeOfST.Field(i).Name, field.Type())
-
-					for i := 0; i < content.Len(); i++ {
-
-						fmt.Printf("[] Obj%d:\n", i+1)
-						parse(content.Index(i).Interface())
-
-					}
-
-				}
-
-			}
-
-			//If map
-			if field.Kind() == reflect.Map {
-
-				content := reflect.ValueOf(field.Interface())
-				keys := content.MapKeys()
-
-				//MapKeys stores keys in reverse form,
-				//Hence we are reversing it to get the original flow
-				swap := reflect.Swapper(keys)
-				for i := 0; i < len(keys)/2; i++ {
-					swap(i, len(keys)-1-i)
-				}
-
-				//Check eempty
-				if len(keys) != 0 {
-
-					fmt.Printf("Field = %s Type = %s -> \n", typeOfST.Field(i).Name, field.Type())
-
-					for _, key := range keys {
-						fmt.Println("key: ", key, " ->")
-						parse(content.MapIndex(key).Interface())
-					}
-				}
-			}
-
-		} else {
-			//print Result
-
-			//Check zero value to ensure field not empty
-			if field.Interface() != reflect.Zero(reflect.TypeOf(field.Interface())).Interface() {
-				fmt.Printf("Field = %s Value = %v Type = %s \n", typeOfST.Field(i).Name, field.Interface(), field.Type())
-			}
+			fmt.Printf("Value = %v", input)
 
 		}
 	}

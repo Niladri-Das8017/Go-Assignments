@@ -6,13 +6,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateContact(db *gorm.DB, name string, number string) model.Contact{
-
-	newContact := model.Contact{
-		Name:   name,
-		Number: number,
-	}
+func CreateContact(db *gorm.DB, newContact model.Contact) model.Contact {
 
 	db.Create(&newContact)
 	return newContact
+
 }

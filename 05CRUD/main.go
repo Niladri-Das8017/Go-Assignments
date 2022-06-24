@@ -14,7 +14,10 @@ func main() {
 	fmt.Println("\nWelcome to CRUD")
 
 	//Creatiung Database Connection
-	database.InitDB()
+	err := database.InitDB()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//Routing
 	r := router.Router()

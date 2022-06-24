@@ -66,67 +66,70 @@ func parse(ip interface{}) {
 	input := reflect.ValueOf(ip)
 	typeOfIP := input.Type()
 
-	//If structure
-	if input.Kind() == reflect.Struct {
+	if input.Kind() == reflect.Struct || input.Kind() == reflect.Slice || input.Kind() == reflect.Map {
 
-		//empSt := obj{}
-		if reflect.DeepEqual(ip, reflect.Zero(reflect.TypeOf(ip)).Interface()) == false {
-			for i := 0; i < input.NumField(); i++ {
+		fmt.Printf("Type = %s ", typeOfIP)
+		//If structure
+		if input.Kind() == reflect.Struct {
 
-				field := input.Field(i)
+			//empSt := obj{}
+			if reflect.DeepEqual(ip, reflect.Zero(reflect.TypeOf(ip)).Interface()) == false {
+				for i := 0; i < input.NumField(); i++ {
 
-				if reflect.DeepEqual(field.Interface(), reflect.Zero(reflect.TypeOf(field.Interface())).Interface()) == false {
+					field := input.Field(i)
 
-					fmt.Printf("\nNo = %d Field = %s Type = %s  ", i, typeOfIP.Field(i).Name, field.Type())
-					parse(field.Interface())
+					if reflect.DeepEqual(field.Interface(), reflect.Zero(reflect.TypeOf(field.Interface())).Interface()) == false {
+
+						fmt.Printf("\nField = %s ", typeOfIP.Field(i).Name)
+						parse(field.Interface())
+					}
+				}
+			}
+
+		}
+		//If slice
+		if input.Kind() == reflect.Slice {
+
+			//Cheeck empty
+			if input.Len() != 0 {
+
+				for i := 0; i < input.Len(); i++ {
+
+					fmt.Printf("\n[] Obj%d  ", i+1)
+					parse(input.Index(i).Interface())
+
+				}
+
+			}
+		}
+
+		//If map
+		if input.Kind() == reflect.Map {
+
+			keys := input.MapKeys()
+
+			//MapKeys stores keys in reverse form,
+			//Hence we are reversing it to get the original flow
+			swap := reflect.Swapper(keys)
+			for i := 0; i < len(keys)/2; i++ {
+				swap(i, len(keys)-1-i)
+			}
+
+			//Check eempty
+			if len(keys) != 0 {
+
+				for _, key := range keys {
+					fmt.Print("\nkey: ", key, " ->")
+					parse(input.MapIndex(key).Interface())
 				}
 			}
 		}
 
-	}
-	//If slice
-	if input.Kind() == reflect.Slice {
-
-		//Cheeck empty
-		if input.Len() != 0 {
-
-			for i := 0; i < input.Len(); i++ {
-
-				fmt.Printf("\n[] Obj%d:", i+1)
-				parse(input.Index(i).Interface())
-
-			}
-
-		}
-	}
-
-	//If map
-	if input.Kind() == reflect.Map {
-
-		keys := input.MapKeys()
-
-		//MapKeys stores keys in reverse form,
-		//Hence we are reversing it to get the original flow
-		swap := reflect.Swapper(keys)
-		for i := 0; i < len(keys)/2; i++ {
-			swap(i, len(keys)-1-i)
-		}
-
-		//Check eempty
-		if len(keys) != 0 {
-
-			for _, key := range keys {
-				fmt.Print("\nkey: ", key, " ->")
-				parse(input.MapIndex(key).Interface())
-			}
-		}
-	}
-
-	if input.Kind() != reflect.Struct && input.Kind() != reflect.Slice && input.Kind() != reflect.Map {
+	} else {
 		//print Result
 		if input != reflect.Zero(reflect.TypeOf(input)) {
 
-			fmt.Printf("Value = %v", input)
+			fmt.Printf("Type = %s Value = %v", typeOfIP, input)
 
 		}
 	}

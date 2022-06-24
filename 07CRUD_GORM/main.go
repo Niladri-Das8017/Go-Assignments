@@ -2,6 +2,7 @@ package main
 
 import (
 	"CRUD_GORM/database"
+	"CRUD_GORM/model"
 	"bufio"
 	"fmt"
 	"log"
@@ -42,6 +43,8 @@ func main() {
 		switch option {
 		case 1:
 
+		
+
 			//taking Input
 			fmt.Print("Name: ")
 			name, err := reader.ReadString('\n')
@@ -59,13 +62,18 @@ func main() {
 			}
 			number = strings.TrimSpace(number)
 
+			//Phone no must bee of 10 digits
 			if len(number) != 10 {
 				fmt.Println("Please Input a 10 digit valid Number")
 				continue
 			}
 
+			newContact := model.Contact{
+				Name: name,
+				Number: number,
+			} 
 			//calling function
-			createdContact:= database.CreateContact(db, name, number)
+			createdContact:= database.CreateContact(db, newContact)
 
 			fmt.Println("Contact Created: ", createdContact.Name)
 

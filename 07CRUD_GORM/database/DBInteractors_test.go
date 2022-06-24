@@ -19,7 +19,7 @@ func TestDBInteractors(t *testing.T) {
 	number := "1234567890"
 
 	//test CreateContact
-	contact := CreateContact(db, name, number)
+	contact := CreateContact(db, model.Contact{Name: name, Number: number})
 	assert.IsType(t, model.Contact{}, contact)
 
 	//test ListAllContacts

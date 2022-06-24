@@ -8,9 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDB() (*gorm.DB, error) {
+func InitDB(dbPath string) (*gorm.DB, error) {
 
-	db, err := gorm.Open(sqlite.Open("PhoneBook.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
 		return nil, errors.New("Faild to Connect to the database")
 	}

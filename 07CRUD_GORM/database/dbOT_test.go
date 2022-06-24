@@ -8,10 +8,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestDBInteractors(t *testing.T) {
+func TestDBOT(t *testing.T) {
 
 	//test IniiitDB
-	db, err := InitDB()
+	db, err := InitDB("PhoneBook.db")
 	assert.Nil(t, err)
 	assert.IsType(t, &gorm.DB{}, db)
 
@@ -33,7 +33,8 @@ func TestDBInteractors(t *testing.T) {
 	assert.IsType(t, []model.Contact{}, searchedContacts)
 
 	//test UpdateContact
-	updatedContact := UpdateContact(db, contact, "updatedName", "9874563210")
+	updateData := model.Contact{Name:  "updatedName", Number: "9874563210"}
+	updatedContact := UpdateContact(db, contact, updateData )
 	assert.IsType(t, model.Contact{}, updatedContact)
 
 	//test DeleteContact

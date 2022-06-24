@@ -64,47 +64,22 @@ func main() {
 func parse(ip interface{}) {
 
 	input := reflect.ValueOf(ip)
-
 	typeOfIP := input.Type()
 
 	//If structure
 	if input.Kind() == reflect.Struct {
 
-		s := input.Interface()
+		//empSt := obj{}
+		if reflect.DeepEqual(ip, reflect.Zero(reflect.TypeOf(ip)).Interface()) == false {
+			for i := 0; i < input.NumField(); i++ {
 
-		switch s.(type) {
-		case obj:
-			empSt := obj{}
-			if reflect.DeepEqual(s, empSt) == false {
-				for i := 0; i < input.NumField(); i++ {
+				field := input.Field(i)
 
-					field := input.Field(i)
+				if reflect.DeepEqual(field.Interface(), reflect.Zero(reflect.TypeOf(field.Interface())).Interface()) == false {
 
-					if reflect.DeepEqual(field.Interface(), reflect.Zero(reflect.TypeOf(field.Interface())).Interface()) == false {
-
-						fmt.Printf("\nNo = %d Field = %s Type = %s  ", i, typeOfIP.Field(i).Name, field.Type())
-						parse(field.Interface())
-					}
+					fmt.Printf("\nNo = %d Field = %s Type = %s  ", i, typeOfIP.Field(i).Name, field.Type())
+					parse(field.Interface())
 				}
-			}
-		case st:
-			empSt := st{}
-
-			//proceed if all fields are not empty
-			if reflect.DeepEqual(s, empSt) == false {
-				for i := 0; i < input.NumField(); i++ {
-
-					field := input.Field(i)
-				
-					if reflect.DeepEqual(field.Interface(), reflect.Zero(reflect.TypeOf(field.Interface())).Interface()) == false {
-
-
-						fmt.Printf("\nNo = %d Field = %s Type = %s  ", i, typeOfIP.Field(i).Name, field.Type())
-						parse(field.Interface())
-					}
-
-				}
-
 			}
 		}
 

@@ -119,7 +119,7 @@ func parse(ip interface{}) {
 			if len(keys) != 0 {
 
 				for _, key := range keys {
-					fmt.Print("\nkey: ", key, " ->")
+					fmt.Print("\nkey: ", key, " -> ")
 					parse(input.MapIndex(key).Interface())
 				}
 			}

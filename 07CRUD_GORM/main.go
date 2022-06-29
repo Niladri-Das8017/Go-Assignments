@@ -53,6 +53,14 @@ func main() {
 			}
 			name = strings.TrimSpace(name)
 
+			fmt.Print("Address: ")
+			add, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println("Wrong input: Name")
+				continue
+			}
+			add = strings.TrimSpace(add)
+
 			fmt.Print("Number: ")
 			number, err := reader.ReadString('\n')
 			if err != nil {
@@ -67,20 +75,26 @@ func main() {
 				continue
 			}
 
+			//Create New Contact
 			newContact := model.Contact{
 				Name: name,
+				Add: add,
+			}
+
+			newPh := model.Ph{
 				Number: number,
 			} 
-			//calling function
-			createdContact:= database.CreateContact(db, newContact)
 
-			fmt.Println("Contact Created: ", createdContact.Name)
+			ph:= database.CreateContact(db, newContact, newPh)
+
+
+			fmt.Println("Contact Created: ", ph.Contact.Name)
 
 			continue
 
 		case 2:
 
-			contacts, err := database.ListAllContacts(db)
+			listOfPhNo, err := database.ListAllContacts(db)
 			if err != nil {
 
 				fmt.Println(err)
@@ -88,8 +102,8 @@ func main() {
 			}
 
 			//Print Result
-			for index, c := range contacts {
-				fmt.Printf("%d	Name: %s	Number: %s\n", index+1, c.Name, c.Number)
+			for index, ph := range listOfPhNo {
+				fmt.Printf("%d	Name: %s	Add: %s		Number: %s\n", index+1, ph.Contact.Name,ph.Contact.Add, ph.Number)
 			}
 
 			continue
@@ -112,10 +126,7 @@ func main() {
 				continue
 			}
 
-			fmt.Println("Contacts found: ")
-			for index, c := range searchedContacts {
-				fmt.Printf("%d	Name: %s	Number: %s\n", index+1, c.Name, c.Number)
-			}
+			database.PrintContacts(db, searchedContacts)
 
 			continue
 
@@ -140,7 +151,7 @@ func main() {
 
 			fmt.Println("Contacts found: ")
 			for index, c := range searchedContacts {
-				fmt.Printf("%d	Name: %s	Number: %s\n", index+1, c.Name, c.Number)
+				fmt.Printf("%d	Name: %s	Add: %s\n", index+1, c.Name, c.Add)
 			}
 
 			fmt.Println("Enter the Sr. No. of the contact you want to update ")
@@ -168,6 +179,14 @@ func main() {
 			}
 			name = strings.TrimSpace(name)
 
+			fmt.Print("Address: ")
+			add, err := reader.ReadString('\n')
+			if err != nil {
+				fmt.Println("Wrong input: Name")
+				continue
+			}
+			add = strings.TrimSpace(add)
+
 			fmt.Print("Number: ")
 			number, err := reader.ReadString('\n')
 			if err != nil {
@@ -181,21 +200,26 @@ func main() {
 				continue
 			}
 
-			updateData := model.Contact{
+			updateContact := model.Contact{
 				Name: name,
+				Add: add,
+			}
+			updatePh := model.Ph{
 				Number: number,
 			}
-			updatedContact := database.UpdateContact(db, searchedContacts[sNo], updateData)
+
+			updatedContact, updatedPh := database.UpdateContact(db, searchedContacts[sNo], updateContact, updatePh)
 			fmt.Printf(`Update Successful: 
 			Name: %s
-			Number: %s`, updatedContact.Name, updatedContact.Number )
+			Add: %s
+			updated Number: %s`, updatedContact.Name, updateContact.Add , updatedPh.Number )
 
 			continue
 
 		case 5:
 
 			//Input
-			fmt.Print("Enter Name to dlete: ")
+			fmt.Print("Enter Name to delete: ")
 			reader := bufio.NewReader(os.Stdin)
 			name, err := reader.ReadString('\n')
 			if err != nil {
@@ -213,10 +237,10 @@ func main() {
 
 			fmt.Println("Contacts found: ")
 			for index, c := range searchedContacts {
-				fmt.Printf("%d	Name: %s	Number: %s\n", index+1, c.Name, c.Number)
+				fmt.Printf("%d	Name: %s	Add: %s\n", index+1, c.Name, c.Add)
 			}
 
-			fmt.Println("Enter the Sr. No. of the contact you want to update ")
+			fmt.Println("Enter the Sr. No. of the contact you want to delete ")
 			input, _ := reader.ReadString('\n')
 			sNo, err := strconv.ParseInt(strings.TrimSpace(input), 10, 64)
 			if err != nil {

@@ -15,7 +15,7 @@ func InitDB(dbPath string) (*gorm.DB, error) {
 		return nil, errors.New("Faild to Connect to the database")
 	}
 
-	db.AutoMigrate(&model.Contact{})
+	db.AutoMigrate(&model.Contact{}, model.Ph{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(&model.Contact{})
 
 	return db, nil

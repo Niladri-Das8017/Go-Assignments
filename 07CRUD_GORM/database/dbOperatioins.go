@@ -5,17 +5,30 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
+var validate = validator.New()
 
-func CreateContact(db *gorm.DB, newContact model.Contact, newPh model.Ph) model.Ph {
+func CreateContact(db *gorm.DB, newContact model.Contact, newPh model.Ph) (model.Ph, error) {
+
+	
+	err := validate.Struct(newContact)
+	if err != nil {
+		return model.Ph{}, err
+	}
 
 	db.Create(&newContact)
 
 	newPh.Contact = newContact
+	err = validate.Struct(newPh)
+	if err != nil {
+		return model.Ph{}, err
+	}
+
 	db.Create(&newPh)
 
-	return newPh
+	return newPh, nil
 
 }
 

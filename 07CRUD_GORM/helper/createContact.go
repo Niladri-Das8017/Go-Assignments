@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -39,23 +40,33 @@ func CreateContact(db *gorm.DB) error {
 	}
 	number = strings.TrimSpace(number)
 
-	//Phone no must bee of 10 digits
-	if len(number) != 10 {
-		return errors.New("Please Input a 10 digit valid Number")
-
-	}
-
 	//Create New Contact
 	newContact := model.Contact{
 		Name: name,
 		Add:  add,
 	}
 
+	//Validation
+	validate := validator.New()
+	err = validate.Struct(newContact)
+	if err != nil {
+		return err
+	}
+
 	newPh := model.Ph{
 		Number: number,
 	}
 
-	ph := database.CreateContact(db, newContact, newPh)
+	//Validation
+	err = validate.StructPartial(newPh, "Number")
+	if err != nil {
+		return errors.New(fmt.Sprint("Failed to create contact", err.Error()))
+	}
+
+	ph, err := database.CreateContact(db, newContact, newPh)
+	if err != nil {
+		return err
+	}
 
 	fmt.Println("Contact Created: ", ph.Contact.Name)
 

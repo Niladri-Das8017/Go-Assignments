@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -82,22 +83,41 @@ func UpdateContact(db *gorm.DB) error {
 	updateReqContact := model.Contact{}
 	updateReqPh := model.Ph{}
 
+	validate := validator.New()
+
 	if name != "" {
+
 		updateReqContact.Name = name
+		err = validate.StructPartial(updateReqContact, "Name")
+		if err != nil {
+			return err
+		}
+
 	}
 	if add != "" {
-		fmt.Println("hi")
+		
 		updateReqContact.Add = add
+		err = validate.StructPartial(updateReqContact, "Add")
+		if err != nil {
+			return err
+		}
+
 	}
+
 	if number != "" {
+		
 		updateReqPh.Number = number
+		err = validate.StructPartial(updateReqPh, "Number")
+		if err != nil {
+			return err
+		}
 	}
 
 	updatedContact, updatedPh := database.UpdateContact(db, searchedContacts[sNo], updateReqContact, updateReqPh)
 	fmt.Printf(`Update Successful: 
 			Name: %s
 			Add: %s
-			updated Number: %s`, updatedContact.Name, updatedContact.Add, updatedPh.Number)
+			Updated Number: %s`, updatedContact.Name, updatedContact.Add, updatedPh.Number)
 	fmt.Println("")
 	return nil
 }

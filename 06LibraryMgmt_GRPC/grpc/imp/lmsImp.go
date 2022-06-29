@@ -42,7 +42,7 @@ func (s *LmsServiceServer) CreateBook(ctx context.Context, req *pb.CreateBookReq
 
 	book.Id = id
 
-	return &pb.CreateBookRes{Book: book}, err
+	return &pb.CreateBookRes{Book: book}, nil
 
 }
 

@@ -20,7 +20,8 @@ func TestDBOT(t *testing.T) {
 	number := "1234567890"
 
 	//test CreateContact
-	ph := CreateContact(db, model.Contact{Name: name, Add: add}, model.Ph{Number: number})
+	ph, err := CreateContact(db, model.Contact{Name: name, Add: add}, model.Ph{Number: number})
+	assert.Nil(t, err)
 	assert.IsType(t, model.Ph{}, ph)
 
 	//test ListAllContacts

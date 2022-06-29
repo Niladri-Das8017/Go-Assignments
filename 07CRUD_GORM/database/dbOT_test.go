@@ -33,6 +33,10 @@ func TestDBOT(t *testing.T) {
 	assert.Nil(t, err)
 	assert.IsType(t, []model.Contact{}, searchedContacts)
 
+	//test PrintContacts
+	err = PrintContacts(db, searchedContacts)
+	assert.Nil(t, err)
+
 	//test UpdateContact
 	updateContact := model.Contact{Name:  "updatedName", Add: "updated Address"}
 	updatePh := model.Ph{Number: "3216549870"}

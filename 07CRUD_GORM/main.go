@@ -2,7 +2,7 @@ package main
 
 import (
 	"CRUD_GORM/database"
-	"CRUD_GORM/model"
+	"CRUD_GORM/helper"
 	"bufio"
 	"fmt"
 	"log"
@@ -42,225 +42,57 @@ func main() {
 		}
 
 		switch option {
+
+		//Create Contact
 		case 1:
 
-			//taking Input
-			fmt.Print("Name: ")
-			name, err := reader.ReadString('\n')
+			err := helper.CreateContact(db)
 			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
+				fmt.Println(err)
 			}
-			name = strings.TrimSpace(name)
-
-			fmt.Print("Address: ")
-			add, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
-			}
-			add = strings.TrimSpace(add)
-
-			fmt.Print("Number: ")
-			number, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Number")
-				continue
-			}
-			number = strings.TrimSpace(number)
-
-			//Phone no must bee of 10 digits
-			if len(number) != 10 {
-				fmt.Println("Please Input a 10 digit valid Number")
-				continue
-			}
-
-			//Create New Contact
-			newContact := model.Contact{
-				Name: name,
-				Add: add,
-			}
-
-			newPh := model.Ph{
-				Number: number,
-			} 
-
-			ph:= database.CreateContact(db, newContact, newPh)
-
-
-			fmt.Println("Contact Created: ", ph.Contact.Name)
 
 			continue
 
+		//List All Contacts
 		case 2:
 
-			listOfPhNo, err := database.ListAllContacts(db)
+			err := helper.ListAllContacts(db)
 			if err != nil {
-
 				fmt.Println(err)
-				continue
 			}
-
-			//Print Result
-			for index, ph := range listOfPhNo {
-				fmt.Printf("%d	Name: %s	Add: %s		Number: %s\n", index+1, ph.Contact.Name,ph.Contact.Add, ph.Number)
-			}
-
 			continue
 
+		//Search Contacts
 		case 3:
 
-			//Input
-			fmt.Print("Enter Name to search: ")
-			reader := bufio.NewReader(os.Stdin)
-			name, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
-			}
-			name = strings.TrimSpace(name)
-
-			searchedContacts, err := database.SearchContacts(db, name)
+			err := helper.SearchContact(db)
 			if err != nil {
 				fmt.Println(err)
-				continue
 			}
-
-			database.PrintContacts(db, searchedContacts)
 
 			continue
 
+		//Update Contacts
 		case 4:
 
-			//Input
-			fmt.Print("Enter Name to search: ")
-			reader := bufio.NewReader(os.Stdin)
-			name, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
-			}
-			name = strings.TrimSpace(name)
-
-			//Searching Contact to update
-			searchedContacts, err := database.SearchContacts(db, name)
+			err := helper.UpdateContact(db)
 			if err != nil {
 				fmt.Println(err)
-				continue
 			}
-
-			fmt.Println("Contacts found: ")
-			for index, c := range searchedContacts {
-				fmt.Printf("%d	Name: %s	Add: %s\n", index+1, c.Name, c.Add)
-			}
-
-			fmt.Println("Enter the Sr. No. of the contact you want to update ")
-			input, _ := reader.ReadString('\n')
-			sNo, err := strconv.ParseInt(strings.TrimSpace(input), 10, 64)
-			if err != nil {
-				fmt.Println("Failed to convert string into int")
-				continue
-			}
-
-			sNo = sNo - 1
-			if sNo < 0 || sNo >= int64(len(searchedContacts)) {
-
-				fmt.Println("Sr. no. Exited")
-				continue
-
-			}
-
-			fmt.Println("Enter Updates")
-			fmt.Print("Name: ")
-			name, err = reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
-			}
-			name = strings.TrimSpace(name)
-
-			fmt.Print("Address: ")
-			add, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
-			}
-			add = strings.TrimSpace(add)
-
-			fmt.Print("Number: ")
-			number, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Number")
-				continue
-			}
-			number = strings.TrimSpace(number)
-
-			if len(number) != 10 {
-				fmt.Println("Please Input a 10 digit valid Number")
-				continue
-			}
-
-			updateContact := model.Contact{
-				Name: name,
-				Add: add,
-			}
-			updatePh := model.Ph{
-				Number: number,
-			}
-
-			updatedContact, updatedPh := database.UpdateContact(db, searchedContacts[sNo], updateContact, updatePh)
-			fmt.Printf(`Update Successful: 
-			Name: %s
-			Add: %s
-			updated Number: %s`, updatedContact.Name, updateContact.Add , updatedPh.Number )
 
 			continue
 
+		//Delete Contact
 		case 5:
 
-			//Input
-			fmt.Print("Enter Name to delete: ")
-			reader := bufio.NewReader(os.Stdin)
-			name, err := reader.ReadString('\n')
-			if err != nil {
-				fmt.Println("Wrong input: Name")
-				continue
-			}
-			name = strings.TrimSpace(name)
-
-			//Searching Contact to update
-			searchedContacts, err := database.SearchContacts(db, name)
+			err := helper.DeleteContacts(db)
 			if err != nil {
 				fmt.Println(err)
-				continue
 			}
-
-			fmt.Println("Contacts found: ")
-			for index, c := range searchedContacts {
-				fmt.Printf("%d	Name: %s	Add: %s\n", index+1, c.Name, c.Add)
-			}
-
-			fmt.Println("Enter the Sr. No. of the contact you want to delete ")
-			input, _ := reader.ReadString('\n')
-			sNo, err := strconv.ParseInt(strings.TrimSpace(input), 10, 64)
-			if err != nil {
-				fmt.Println("Failed to convert string into int")
-				continue
-			}
-
-			sNo = sNo - 1
-			if sNo < 0 || sNo >= int64(len(searchedContacts)) {
-
-				fmt.Println("Sr. no. Exited")
-				continue
-
-			}
-
-			deletedAt := database.DeleteContact(db, searchedContacts[sNo])
-
-			fmt.Println("Contact Deletd\n Deleted at : ", deletedAt)
 
 			continue
+
+		//Exit
 		default:
 			os.Exit(0)
 		}

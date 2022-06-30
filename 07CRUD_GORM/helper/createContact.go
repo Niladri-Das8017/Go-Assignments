@@ -10,10 +10,9 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator"
-	"gorm.io/gorm"
 )
 
-func CreateContact(db *gorm.DB) error {
+func CreateContact() error {
 
 	//taking Input
 	reader := bufio.NewReader(os.Stdin)
@@ -63,7 +62,7 @@ func CreateContact(db *gorm.DB) error {
 		return errors.New(fmt.Sprint("Failed to create contact", err.Error()))
 	}
 
-	ph, err := database.CreateContact(db, newContact, newPh)
+	ph, err := database.CreateContact(newContact, newPh)
 	if err != nil {
 		return err
 	}

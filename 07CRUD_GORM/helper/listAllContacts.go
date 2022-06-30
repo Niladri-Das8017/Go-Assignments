@@ -3,13 +3,11 @@ package helper
 import (
 	"CRUD_GORM/database"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
-func ListAllContacts(db *gorm.DB) error {
+func ListAllContacts() error {
 
-	listOfPhNo, err := database.ListAllContacts(db)
+	listOfPhNo, err := database.ListAllContacts()
 	if err != nil {
 
 		return err

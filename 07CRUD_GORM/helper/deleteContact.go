@@ -8,11 +8,9 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"gorm.io/gorm"
 )
 
-func DeleteContacts(db *gorm.DB) error {
+func DeleteContacts() error {
 
 	//Input
 	fmt.Print("Enter Name to delete: ")
@@ -24,7 +22,7 @@ func DeleteContacts(db *gorm.DB) error {
 	name = strings.TrimSpace(name)
 
 	//Searching Contact to update
-	searchedContacts, err := database.SearchContacts(db, name)
+	searchedContacts, err := database.SearchContacts(name)
 	if err != nil {
 		return err
 	}
@@ -47,10 +45,9 @@ func DeleteContacts(db *gorm.DB) error {
 
 		return errors.New("Sr. no. Exited")
 
-
 	}
 
-	deletedAt := database.DeleteContact(db, searchedContacts[sNo])
+	deletedAt := database.DeleteContact(searchedContacts[sNo])
 
 	fmt.Println("Contact Deletd\n Deleted at : ", deletedAt)
 

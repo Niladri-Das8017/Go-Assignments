@@ -1,7 +1,6 @@
 package main
 
 import (
-	"CRUD_GORM/database"
 	"CRUD_GORM/helper"
 	"bufio"
 	"fmt"
@@ -14,11 +13,11 @@ import (
 func main() {
 
 	//Initialize Database
-	dbPath := "database/PhoneBook.db"
-	db, err := database.InitDB(dbPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//dbPath := "database/PhoneBook.db"
+	// db, err := database.InitDB(dbPath)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	//Input Option
 	for {
@@ -46,7 +45,7 @@ func main() {
 		//Create Contact
 		case 1:
 
-			err := helper.CreateContact(db)
+			err := helper.CreateContact()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -56,7 +55,7 @@ func main() {
 		//List All Contacts
 		case 2:
 
-			err := helper.ListAllContacts(db)
+			err := helper.ListAllContacts()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -65,7 +64,7 @@ func main() {
 		//Search Contacts
 		case 3:
 
-			err := helper.SearchContact(db)
+			err := helper.SearchContact()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -75,7 +74,7 @@ func main() {
 		//Update Contacts
 		case 4:
 
-			err := helper.UpdateContact(db)
+			err := helper.UpdateContact()
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -85,7 +84,7 @@ func main() {
 		//Delete Contact
 		case 5:
 
-			err := helper.DeleteContacts(db)
+			err := helper.DeleteContacts()
 			if err != nil {
 				fmt.Println(err)
 			}

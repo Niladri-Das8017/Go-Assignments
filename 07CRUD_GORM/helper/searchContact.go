@@ -7,11 +7,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"gorm.io/gorm"
 )
 
-func SearchContact(db *gorm.DB) error {
+func SearchContact() error {
 
 	//Input
 	fmt.Print("Enter Name to search: ")
@@ -22,13 +20,13 @@ func SearchContact(db *gorm.DB) error {
 	}
 	name = strings.TrimSpace(name)
 
-	searchedContacts, err := database.SearchContacts(db, name)
+	searchedContacts, err := database.SearchContacts(name)
 	if err != nil {
 		return err
 	}
 
 	fmt.Println("Contacts found: ")
-	database.PrintContacts(db, searchedContacts)
+	database.PrintContacts(searchedContacts)
 
 	return nil
 }

@@ -11,10 +11,9 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator"
-	"gorm.io/gorm"
 )
 
-func UpdateContact(db *gorm.DB) error {
+func UpdateContact() error {
 
 	//Input
 	fmt.Print("Enter Name to search: ")
@@ -26,7 +25,7 @@ func UpdateContact(db *gorm.DB) error {
 	name = strings.TrimSpace(name)
 
 	//Searching Contact to update
-	searchedContacts, err := database.SearchContacts(db, name)
+	searchedContacts, err := database.SearchContacts(name)
 	if err != nil {
 
 		return err
@@ -95,7 +94,7 @@ func UpdateContact(db *gorm.DB) error {
 
 	}
 	if add != "" {
-		
+
 		updateReqContact.Add = add
 		err = validate.StructPartial(updateReqContact, "Add")
 		if err != nil {
@@ -105,7 +104,7 @@ func UpdateContact(db *gorm.DB) error {
 	}
 
 	if number != "" {
-		
+
 		updateReqPh.Number = number
 		err = validate.StructPartial(updateReqPh, "Number")
 		if err != nil {
@@ -113,7 +112,7 @@ func UpdateContact(db *gorm.DB) error {
 		}
 	}
 
-	updatedContact, updatedPh := database.UpdateContact(db, searchedContacts[sNo], updateReqContact, updateReqPh)
+	updatedContact, updatedPh := database.UpdateContact(searchedContacts[sNo], updateReqContact, updateReqPh)
 	fmt.Printf(`Update Successful: 
 			Name: %s
 			Add: %s

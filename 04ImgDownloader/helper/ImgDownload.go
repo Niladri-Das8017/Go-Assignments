@@ -41,8 +41,10 @@ func ImgDownload(imgBox []string) error {
 			if result.Scheme == "https" {
 
 				//SAVE IMAGE
-				path := filepath.Join("C:/Users/Niladri Das/Desktop/Go-Assignments/04ImgDownloader/img", imgName) //Creating Path
-				file, err := os.Create(path)
+				imgFolderPath := "C:/Users/Niladri Das/go/Go-Assignments/04ImgDownloader/img"
+				err := os.Mkdir(imgFolderPath, os.FileMode(0777)) //creating path
+				filePath := filepath.Join(imgFolderPath, imgName) //Creating Path
+				file, err := os.Create(filePath)
 				if err != nil {
 					return err
 				}

@@ -10,35 +10,38 @@ import (
 
 func TestDBOT(t *testing.T) {
 
-	//test IniiitDB
-	db, err := InitDB("PhoneBook.db")
-	assert.Nil(t, err)
-	assert.IsType(t, &gorm.DB{}, db)
-
 	name := "testName"
+	add := "test Address"
 	number := "1234567890"
 
 	//test CreateContact
-	contact := CreateContact(db, model.Contact{Name: name, Number: number})
-	assert.IsType(t, model.Contact{}, contact)
+	ph, err := CreateContact(model.Contact{Name: name, Add: add}, model.Ph{Number: number})
+	assert.Nil(t, err)
+	assert.IsType(t, model.Ph{}, ph)
 
 	//test ListAllContacts
-	allContacts, err := ListAllContacts(db)
+	allContacts, err := ListAllContacts()
 	assert.Nil(t, err)
-	assert.IsType(t, []model.Contact{}, allContacts)
+	assert.IsType(t, []model.Ph{}, allContacts)
 
 	//test SearchContacts
-	searchedContacts, err := SearchContacts(db, name)
+	searchedContacts, err := SearchContacts(name)
 	assert.Nil(t, err)
 	assert.IsType(t, []model.Contact{}, searchedContacts)
 
+	//test PrintContacts
+	err = PrintContacts(searchedContacts)
+	assert.Nil(t, err)
+
 	//test UpdateContact
-	updateData := model.Contact{Name:  "updatedName", Number: "9874563210"}
-	updatedContact := UpdateContact(db, contact, updateData )
+	updateContact := model.Contact{Name: "updatedName", Add: "updated Address"}
+	updatePh := model.Ph{Number: "3216549870"}
+	updatedContact, updatedPh := UpdateContact(ph.Contact, updateContact, updatePh)
 	assert.IsType(t, model.Contact{}, updatedContact)
+	assert.IsType(t, model.Ph{}, updatedPh)
 
 	//test DeleteContact
-	deletedAt := DeleteContact(db, updatedContact)
+	deletedAt := DeleteContact(updatedContact)
 	assert.IsType(t, gorm.DeletedAt{}, deletedAt)
 
 }

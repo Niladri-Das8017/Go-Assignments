@@ -26,7 +26,10 @@ func SearchContact() error {
 	}
 
 	fmt.Println("Contacts found: ")
-	database.PrintContacts(searchedContacts)
+	err = database.PrintContacts(searchedContacts)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

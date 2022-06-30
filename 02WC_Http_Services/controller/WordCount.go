@@ -34,7 +34,12 @@ func WordCount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Calling Helper
-	wcMap := helper.WordCount(content)
+	wcMap, err := helper.WordCount(content)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode("500 - Something wrong happened on our side")
+		return
+	}
 
 	//Check if there is any valid word
 	if len(wcMap) == 0 {

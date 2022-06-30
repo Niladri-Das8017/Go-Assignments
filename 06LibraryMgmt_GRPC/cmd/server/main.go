@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"lms/database"
 	"lms/grpc/imp"
 	pb "lms/grpc/pb"
 	"log"
@@ -16,12 +15,6 @@ const port = ":50051"
 func main() {
 
 	fmt.Println("\nWelcome to LMS GRPC")
-
-	//Creatiung Database Connection
-	err := database.InitDB()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {

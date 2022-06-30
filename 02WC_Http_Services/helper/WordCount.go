@@ -5,10 +5,13 @@ import (
 	"strings"
 )
 
-func WordCount(content string) map[string]int {
+func WordCount(content string) (map[string]int, error) {
 
 	//Removing all spcial charecters and white spaces from string
-	reg, _ := regexp.Compile(`[^\w]`)
+	reg, err := regexp.Compile(`[^\w]`)
+	if err != nil {
+		return nil, err
+	}
 
 	content = reg.ReplaceAllString(content, " ")
 
@@ -26,5 +29,5 @@ func WordCount(content string) map[string]int {
 		}
 
 	}
-	return wcMap
+	return wcMap, nil
 }

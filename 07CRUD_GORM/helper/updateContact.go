@@ -37,7 +37,10 @@ func UpdateContact() error {
 	}
 
 	fmt.Println("Enter the Sr. No. of the contact you want to update ")
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
 	sNo, err := strconv.ParseInt(strings.TrimSpace(input), 10, 64)
 	if err != nil {
 		return errors.New("Failed to convert string into int")

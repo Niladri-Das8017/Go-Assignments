@@ -2,6 +2,8 @@ package helper
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var dict map[string]int
@@ -9,7 +11,8 @@ var dict map[string]int
 func TestWC(t *testing.T) {
 
 	content := "aa aa bb aa cc bb aa"
-	dict = WordCount(content)
+	dict, err := WordCount(content)
+	assert.Nil(t, err)
 
 	//expected Result
 	expected := 4

@@ -1,89 +1,97 @@
 package helper
 
 import (
-	"errors"
+	"context"
 	"fmt"
-	"io"
 	"net/http"
+	"net/url"
 	"os"
+	"path/filepath"
+
 	"strings"
-	"sync"
+
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 )
 
-const PATH = "Saved Picture"
-const DownloadChannel = 3
+func ImgDownload(imgBox []string) error {
 
-func Downloader(imageUrl []string) error {
-		fmt.Println(imageUrl)
-	var sem chan struct{}
-	var wg sync.WaitGroup
-	sem = make(chan struct{}, DownloadChannel)
-	defer close(sem)
-	var errs chan error
+	fmt.Println("Downloading Images...")
 
+	const maxWorkers = 1
+	sem := semaphore.NewWeighted(maxWorkers)
 	//Creating error group
-	//eg := new(errgroup.Group)
-	for _, value := range imageUrl { //val,bool
-		wg.Add(1)
-		select {
-		case sem <- struct{}{}:
-		case x := <-errs:
+	eg, ctx := errgroup.WithContext(context.Background())
 
-			fmt.Println("err")
-			return x
+	for _, src := range imgBox {
 
+		imgUrl := src
+
+		
+		err := sem.Acquire(ctx, 1)
+		if err != nil {
+			fmt.Printf("Acquire err = %+v\n", err)
+			continue
 		}
 
-		go func(val string) {
-			err := downlaodImage(val)
+		//fmt.Printf("executing %d\n", i)
+
+
+		eg.Go(func() error {
+
+			defer sem.Release(1)
+
+			//Seperating img source, make it easy to identify name of image
+			//eg: /images/logos/google.svg as google.svg => [ images logos google.svg ]
+			splitSrc := strings.Split(imgUrl, "/")
+
+			//Identidy the name from image source using splitSrc
+			imgName := splitSrc[len(splitSrc)-1]
+
+			//Image source parsing
+			result, err := url.Parse(imgUrl)
 			if err != nil {
-				errs <- err
+				return err
 			}
 
-			defer wg.Done()
-			defer func() {
+			//If the source have "https" scheme, then
+			if result.Scheme == "https" {
 
-				<-sem
-			}()
+				//SAVE IMAGE
+				imgFolderPath := "C:/Users/Niladri Das/go/Go-Assignments/GoRutine/img"
+				err := os.Mkdir(imgFolderPath, os.FileMode(0777)) //creating folder
+				filePath := filepath.Join(imgFolderPath, imgName) //Creating Path
+				file, err := os.Create(filePath)
+				if err != nil {
+					return err
+				}
 
-		}(value)
+				defer file.Close()
+
+				response, err := http.Get(imgUrl)
+				if err != nil {
+					return err
+				}
+				defer response.Body.Close()
+
+				//Read from reesponse.Body and write to file
+				file.ReadFrom(response.Body)
+				fmt.Println("Downloaded: ", imgName, "\tSRC: ", imgUrl)
+			}
+
+			return nil
+
+		})
+
 	}
-	wg.Wait()
 
-	return nil
-}
-
-func downlaodImage(ImagesUrl string) error {
-	err := os.Mkdir("PATH", os.FileMode(0777))
+	// Wait for all download to complete.
+	err := eg.Wait()
 	if err != nil {
-		return errors.New("unable to create file directory ")
-	}
-	var Addurl string
-	if ImagesUrl[:4] != "http" {
-		Addurl = "http:" + ImagesUrl
-	} else {
-		Addurl = ImagesUrl
-	}
-	parts := strings.Split(Addurl, "/")
-
-	name := parts[len(parts)-1]
-
-	resp, err := http.Get(Addurl)
-	if err != nil {
-		return errors.New("unable to fetch url")
+		return err
 	}
 
-	file, err := os.Create(string(PATH + "/" + name))
-	if err != nil {
-		return errors.New("unable to create file ")
+	fmt.Println("Successfully Downloaded All the images.")
 
-	}
-	defer file.Close()
-
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		return errors.New("unable to copy")
-	}
-	fmt.Printf("Saving %s \n", PATH+"/"+name)
 	return nil
 }

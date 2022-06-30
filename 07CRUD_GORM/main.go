@@ -12,13 +12,6 @@ import (
 
 func main() {
 
-	//Initialize Database
-	//dbPath := "database/PhoneBook.db"
-	// db, err := database.InitDB(dbPath)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	//Input Option
 	for {
 		fmt.Println(`Phonebook...
@@ -34,7 +27,10 @@ func main() {
 		fmt.Printf("Choose Option: ")
 
 		reader := bufio.NewReader(os.Stdin)
-		input, _ := reader.ReadString('\n')
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatal("Prroblem iin reading string : ", err)
+		}
 		option, err := strconv.ParseInt(strings.TrimSpace(input), 10, 64)
 		if err != nil {
 			log.Fatal("Failed to convert string into int")

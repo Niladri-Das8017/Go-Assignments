@@ -21,10 +21,6 @@ func TestDb(t *testing.T) {
 		Author: "test author",
 	}
 
-	//Initiialize and Test Database
-	err := InitDB()
-	assert.Nil(t, err)
-
 	//Test CreateBook
 	id, err := CreateBook(ctx, book)
 	assert.Nil(t, err)

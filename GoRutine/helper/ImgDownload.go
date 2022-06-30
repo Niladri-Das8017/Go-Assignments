@@ -18,7 +18,7 @@ func ImgDownload(imgBox []string) error {
 
 	fmt.Println("Downloading Images...")
 
-	const maxWorkers = 1
+	const maxWorkers = 2
 	sem := semaphore.NewWeighted(maxWorkers)
 	//Creating error group
 	eg, ctx := errgroup.WithContext(context.Background())
@@ -27,7 +27,6 @@ func ImgDownload(imgBox []string) error {
 
 		imgUrl := src
 
-		
 		err := sem.Acquire(ctx, 1)
 		if err != nil {
 			fmt.Printf("Acquire err = %+v\n", err)
@@ -35,7 +34,6 @@ func ImgDownload(imgBox []string) error {
 		}
 
 		//fmt.Printf("executing %d\n", i)
-
 
 		eg.Go(func() error {
 

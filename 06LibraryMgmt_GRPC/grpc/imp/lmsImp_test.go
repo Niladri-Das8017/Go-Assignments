@@ -2,7 +2,6 @@ package imp
 
 import (
 	"context"
-	"lms/database"
 	pb "lms/grpc/pb"
 	"log"
 	"net"
@@ -17,10 +16,6 @@ const bufSize = 1024 * 1024
 var lis *bufconn.Listener
 
 func init() {
-	err := database.InitDB()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	lis = bufconn.Listen(bufSize)
 	server := grpc.NewServer()

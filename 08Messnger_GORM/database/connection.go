@@ -2,17 +2,21 @@ package database
 
 import (
 	"crudGORM/model"
+	"errors"
+	"log"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func IntiDB() (*gorm.DB, error) {
+var DB *gorm.DB
+
+func init() {
 
 	//database
 	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		log.Fatal(errors.New("Could not connect to the database"))
 	}
 
 	//AutoMigrate
@@ -20,7 +24,7 @@ func IntiDB() (*gorm.DB, error) {
 	//seeding some initial data into database
 	seed(db)
 
-	return db, nil
+	DB = db
 }
 
 //Insert data to DB

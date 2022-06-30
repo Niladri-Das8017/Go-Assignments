@@ -42,7 +42,7 @@ func ImgDownload(imgBox []string) error {
 
 				//SAVE IMAGE
 				imgFolderPath := "C:/Users/Niladri Das/go/Go-Assignments/04ImgDownloader/img"
-				err := os.Mkdir(imgFolderPath, os.FileMode(0777)) //creating path
+				err := os.Mkdir(imgFolderPath, os.FileMode(0777)) //creating folder
 				filePath := filepath.Join(imgFolderPath, imgName) //Creating Path
 				file, err := os.Create(filePath)
 				if err != nil {

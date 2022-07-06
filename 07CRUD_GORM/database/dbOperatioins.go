@@ -6,19 +6,21 @@ import (
 	"fmt"
 
 	"github.com/go-playground/validator"
-	"gorm.io/gorm"
 )
+
 var validate = validator.New()
 
 func CreateContact(newContact model.Contact, newPh model.Ph) (model.Ph, error) {
 
-	
 	err := validate.Struct(newContact)
 	if err != nil {
 		return model.Ph{}, err
 	}
 
-	DB.Create(&newContact)
+	err = DB.Create(&newContact).Error
+	if err != nil {
+		return model.Ph{}, err
+	}
 
 	newPh.Contact = newContact
 	err = validate.Struct(newPh)
@@ -26,7 +28,10 @@ func CreateContact(newContact model.Contact, newPh model.Ph) (model.Ph, error) {
 		return model.Ph{}, err
 	}
 
-	DB.Create(&newPh)
+	err = DB.Create(&newPh).Error
+	if err != nil {
+		return model.Ph{}, err
+	}
 
 	return newPh, nil
 
@@ -36,7 +41,10 @@ func ListAllContacts() ([]model.Ph, error) {
 	var listOfPhNo []model.Ph
 
 	//Query using Join
-	DB.Joins("Contact").Find(&listOfPhNo)
+	err := DB.Joins("Contact").Find(&listOfPhNo).Error
+	if err != nil {
+		return nil, err
+	}
 
 	if len(listOfPhNo) == 0 {
 		return nil, errors.New("Empty PhoneBook")
@@ -49,7 +57,11 @@ func SearchContacts(name string) ([]model.Contact, error) {
 
 	var searchedContacts []model.Contact
 
-	DB.Where(&model.Contact{Name: name}).Find(&searchedContacts)
+	err := DB.Where(&model.Contact{Name: name}).Find(&searchedContacts).Error
+	if err != nil {
+		return nil, err
+	}
+
 	if len(searchedContacts) == 0 {
 		return nil, errors.New("No such Contact exist!")
 	}
@@ -57,7 +69,7 @@ func SearchContacts(name string) ([]model.Contact, error) {
 	return searchedContacts, nil
 }
 
-func PrintContacts( Contacts []model.Contact) error {
+func PrintContacts(Contacts []model.Contact) error {
 
 	if len(Contacts) == 0 {
 		return errors.New("No contact to show")
@@ -68,7 +80,10 @@ func PrintContacts( Contacts []model.Contact) error {
 	for index, c := range Contacts {
 
 		//Query using where
-		DB.Where(&model.Ph{Contact: c}).Find(&ph)
+		err := DB.Where(&model.Ph{Contact: c}).Find(&ph).Error
+		if err != nil {
+			return err
+		}
 
 		fmt.Printf("%d	Name: %s	Add: %s		Number: %s\n", index+1, c.Name, c.Add, ph.Number)
 
@@ -76,20 +91,33 @@ func PrintContacts( Contacts []model.Contact) error {
 	return nil
 }
 
-func UpdateContact( contact model.Contact, updateReqContact model.Contact, updateReqPh model.Ph) (model.Contact, model.Ph) {
+func UpdateContact(contact model.Contact, updateReqContact model.Contact, updateReqPh model.Ph) (model.Contact, model.Ph, error) {
 
-	DB.Model(&contact).Updates(updateReqContact)
+	err := DB.Model(&contact).Updates(updateReqContact).Error
+	if err != nil {
+		return model.Contact{}, model.Ph{}, err
+	}
 
 	var ph model.Ph
-	DB.Where(&model.Ph{Contact: contact}).Find(&ph)
-	DB.Model(&ph).Updates(updateReqPh)
+	err = DB.Where(&model.Ph{Contact: contact}).Find(&ph).Error
+	if err != nil {
+		return model.Contact{}, model.Ph{}, err
+	}
 
-	return contact, ph
+	err = DB.Model(&ph).Updates(updateReqPh).Error
+	if err != nil {
+		return model.Contact{}, model.Ph{}, err
+	}
+
+	return contact, ph, nil
 }
 
-func DeleteContact(contact model.Contact) gorm.DeletedAt {
+func DeleteContact(contact model.Contact) (*model.Contact, error) {
 
-	DB.Delete(&contact)
+	err := DB.Delete(&contact).Error
+	if err != nil {
+		return nil, err
+	}
 
-	return contact.DeletedAt
+	return &contact, nil
 }

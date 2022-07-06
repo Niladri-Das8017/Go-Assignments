@@ -18,6 +18,7 @@ func TestDBOT(t *testing.T) {
 	ph, err := CreateContact(model.Contact{Name: name, Add: add}, model.Ph{Number: number})
 	assert.Nil(t, err)
 	assert.IsType(t, model.Ph{}, ph)
+	assert.EqualValues(t, ph.Number, number)
 
 	//test ListAllContacts
 	allContacts, err := ListAllContacts()
@@ -36,12 +37,17 @@ func TestDBOT(t *testing.T) {
 	//test UpdateContact
 	updateContact := model.Contact{Name: "updatedName", Add: "updated Address"}
 	updatePh := model.Ph{Number: "3216549870"}
-	updatedContact, updatedPh := UpdateContact(ph.Contact, updateContact, updatePh)
+	updatedContact, updatedPh, err := UpdateContact(ph.Contact, updateContact, updatePh)
+	assert.Nil(t, err)
 	assert.IsType(t, model.Contact{}, updatedContact)
 	assert.IsType(t, model.Ph{}, updatedPh)
+	assert.EqualValues(t, updateContact.Name, updateContact.Name)
+	assert.EqualValues(t, updatedContact.Add, updateContact.Add)
+	assert.Equal(t, updatedPh.Number, updatePh.Number)
 
 	//test DeleteContact
-	deletedAt := DeleteContact(updatedContact)
-	assert.IsType(t, gorm.DeletedAt{}, deletedAt)
+	deletedContact, err := DeleteContact(updatedContact)
+	assert.Nil(t, err)
+	assert.IsType(t, gorm.DeletedAt{}, deletedContact.DeletedAt)
 
 }

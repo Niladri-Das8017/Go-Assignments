@@ -47,9 +47,12 @@ func DeleteContacts() error {
 
 	}
 
-	deletedAt := database.DeleteContact(searchedContacts[sNo])
+	deletedContact, err := database.DeleteContact(searchedContacts[sNo])
+	if err != nil {
+		return err
+	}
 
-	fmt.Println("Contact Deletd\n Deleted at : ", deletedAt)
+	fmt.Println("Contact Deletd\n Deleted at : ", deletedContact.DeletedAt)
 
 	return nil
 }

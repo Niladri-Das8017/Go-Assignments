@@ -115,7 +115,11 @@ func UpdateContact() error {
 		}
 	}
 
-	updatedContact, updatedPh := database.UpdateContact(searchedContacts[sNo], updateReqContact, updateReqPh)
+	updatedContact, updatedPh, err := database.UpdateContact(searchedContacts[sNo], updateReqContact, updateReqPh)
+	if err != nil {
+		return err
+	}
+	
 	fmt.Printf(`Update Successful: 
 			Name: %s
 			Add: %s

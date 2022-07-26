@@ -13,7 +13,12 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "applcaton/json")
 
 	var contact model.Contact
-	_ = json.NewDecoder(r.Body).Decode(&contact)
+	err := json.NewDecoder(r.Body).Decode(&contact)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("500 - Something bad happened"))
+	}
+
 	if contact.Name == "" || contact.Number == "" || len(contact.Number) != 10 {
 		if len(contact.Number) != 10 {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -28,7 +33,7 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	//insert  1 movie
+	//insert  1 contact
 	inserted, err := database.CreateContact(contact, ctx)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

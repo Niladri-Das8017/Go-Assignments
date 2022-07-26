@@ -2,6 +2,8 @@ package database
 
 import (
 	"CRUD_GORM/model"
+	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,11 +45,38 @@ func TestDBOT(t *testing.T) {
 	assert.IsType(t, model.Ph{}, updatedPh)
 	assert.EqualValues(t, updateContact.Name, updateContact.Name)
 	assert.EqualValues(t, updatedContact.Add, updateContact.Add)
-	assert.Equal(t, updatedPh.Number, updatePh.Number)
+	assert.EqualValues(t, updatedPh.Number, updatePh.Number)
+
+	equalValuesExcept(t, updatePh, updatedPh, "gorm.Model")
 
 	//test DeleteContact
 	deletedContact, err := DeleteContact(updatedContact)
 	assert.Nil(t, err)
 	assert.IsType(t, gorm.DeletedAt{}, deletedContact.DeletedAt)
 
+}
+
+func equalValuesExcept(t *testing.T, expected interface{}, actual interface{}, field string) bool {
+
+	exp := reflect.ValueOf(expected)
+	ac := reflect.ValueOf(actual)
+
+	for i := 0; i < exp.NumField(); i++ {
+
+		if exp.Type().Field(i).Name == field {
+
+			continue
+
+		}
+
+		if !assert.EqualValues(t, exp.Field(i), ac.Field(i)) {
+
+			fmt.Println("field: ", exp.Type().Field(i).Name)
+			return false
+
+		}
+
+	}
+
+	return true
 }
